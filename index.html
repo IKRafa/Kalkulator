@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Ilmiah ByRafa</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f0f8ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative; /* Posisi relatif untuk penempatan copyright */
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 480px; /* Lebar maksimum untuk lebih banyak tombol */
+        }
+
+        h1 {
+            color: #333333;
+            font-size: 24px;
+        }
+
+        #display {
+            padding: 10px;
+            width: calc(100% - 24px);
+            margin-bottom: 10px;
+            border: 1px solid #dddddd;
+            border-radius: 5px;
+            font-size: 18px;
+            text-align: right;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:disabled {
+            background-color: #888888;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: #45a049;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            grid-auto-rows: minmax(50px, auto); /* Menyusun tombol dengan tinggi minimum */
+        }
+
+        #copyright {
+            position: absolute; /* Posisi absolut */
+            bottom: 10px; /* Jarak dari bawah */
+            right: 10px; /* Jarak dari kanan */
+            font-size: 14px;
+            color: #888888;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 22px;
+            }
+
+            #display, button, #copyright {
+                font-size: 16px;
+            }
+
+            button {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Kalkulator Ilmiah ByRafa</h1>
+    <input type="text" id="display" disabled>
+    <div class="grid-container">
+        <!-- Tombol Kalkulator -->
+        <button onclick="clearDisplay()">C</button>
+        <button onclick="appendFunction('Math.sqrt(')">√</button>
+        <button onclick="appendFunction('Math.pow(')">x^y</button>
+        <button onclick="appendFunction('Math.exp(')">exp</button>
+
+        <button onclick="appendNumber('7')">7</button>
+        <button onclick="appendNumber('8')">8</button>
+        <button onclick="appendNumber('9')">9</button>
+        <button onclick="setOperation('/')">/</button>
+
+        <button onclick="appendNumber('4')">4</button>
+        <button onclick="appendNumber('5')">5</button>
+        <button onclick="appendNumber('6')">6</button>
+        <button onclick="setOperation('*')">*</button>
+
+        <button onclick="appendNumber('1')">1</button>
+        <button onclick="appendNumber('2')">2</button>
+        <button onclick="appendNumber('3')">3</button>
+        <button onclick="setOperation('-')">-</button>
+
+        <button onclick="appendNumber('0')">0</button>
+        <button onclick="appendDecimal()">.</button>
+        <button onclick="calculate()">=</button>
+        <button onclick="setOperation('+')">+</button>
+
+        <!-- Fungsi Ilmiah -->
+        <button onclick="appendFunction('Math.sin(')">sin</button>
+        <button onclick="appendFunction('Math.cos(')">cos</button>
+        <button onclick="appendFunction('Math.tan(')">tan</button>
+        <button onclick="appendFunction('Math.log(')">log</button>
+
+        <button onclick="appendFunction('Math.PI')">π</button>
+        <button onclick="appendFunction('Math.E')">e</button>
+        <button onclick="appendFunction('Math.asin(')">asin</button>
+        <button onclick="appendFunction('Math.acos(')">acos</button>
+
+        <button onclick="appendFunction('Math.atan(')">atan</button>
+        <button onclick="appendFunction('Math.ceil(')">ceil</button>
+        <button onclick="appendFunction('Math.floor(')">floor</button>
+        <button onclick="appendFunction('Math.round(')">round</button>
+    </div>
+</div>
+
+<div id="copyright">
+    &copy; 2024 ByRafa
+</div>
+
+<script>
+    let currentExpression = '';
+    let cursorPosition = 0;
+
+    function appendToExpression(str) {
+        // Sisipkan string di posisi kursor
+        currentExpression = currentExpression.slice(0, cursorPosition) + str + currentExpression.slice(cursorPosition);
+        cursorPosition += str.length; // Pindahkan kursor ke kanan
+        updateDisplay();
+    }
+
+    function updateDisplay() {
+        const displayElement = document.getElementById('display');
+        displayElement.value = currentExpression;
+        setCursorPosition(displayElement, cursorPosition);
+    }
+
+    function setCursorPosition(element, position) {
+        // Mengatur posisi kursor di dalam input field
+        element.focus();
+        element.setSelectionRange(position, position);
+    }
+
+    function appendFunction(func) {
+        appendToExpression(func + ')');
+        cursorPosition--; // Pindahkan kursor di antara tanda kurung
+        updateDisplay();
+    }
+
+    function appendNumber(number) {
+        appendToExpression(number);
+    }
+
+    function appendDecimal() {
+        if (!currentExpression.includes('.')) {
+            appendToExpression('.');
+        }
+    }
+
+    function setOperation(op) {
+        appendToExpression(op);
+    }
+
+    function calculate() {
+        try {
+            const result = eval(currentExpression);
+            currentExpression = result.toString();
+            cursorPosition = currentExpression.length; // Pindahkan kursor ke akhir
+            updateDisplay();
+        } catch (error) {
+            alert('Error in calculation');
+        }
+    }
+
+    function clearDisplay() {
+        currentExpression = '';
+        cursorPosition = 0;
+        updateDisplay();
+    }
+
+    document.getElementById('display').addEventListener('click', function (e) {
+        const position = e.target.selectionStart;
+        cursorPosition = position; // Update cursor position on click
+    });
+</script>
+
+</body>
+</html>
