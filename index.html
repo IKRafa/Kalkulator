@@ -47,6 +47,8 @@
             border-radius: 5px;
             font-size: 18px;
             text-align: right;
+            overflow-x: auto; /* Agar layar bisa digeser */
+            white-space: nowrap; /* Mencegah teks membungkus ke baris baru */
         }
 
         button {
@@ -144,6 +146,9 @@
         <button onclick="appendFunction('Math.ceil(')">ceil</button>
         <button onclick="appendFunction('Math.floor(')">floor</button>
         <button onclick="appendFunction('Math.round(')">round</button>
+
+        <!-- Tombol Faktorial -->
+        <button onclick="appendFunction('factorial(')">x!</button>
     </div>
 </div>
 
@@ -196,7 +201,7 @@
 
     function calculate() {
         try {
-            const result = eval(currentExpression);
+            let result = eval(currentExpression.replace(/factorial\((\d+)\)/g, (match, p1) => factorial(Number(p1))));
             currentExpression = result.toString();
             cursorPosition = currentExpression.length; // Pindahkan kursor ke akhir
             updateDisplay();
@@ -209,6 +214,15 @@
         currentExpression = '';
         cursorPosition = 0;
         updateDisplay();
+    }
+
+    function factorial(n) {
+        if (n === 0 || n === 1) return 1;
+        let result = 1;
+        for (let i = 2; i <= n; i++) {
+            result *= i;
+        }
+        return result;
     }
 
     document.getElementById('display').addEventListener('click', function (e) {
